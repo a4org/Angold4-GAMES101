@@ -1,6 +1,7 @@
 #include "Triangle.hpp"
 #include "rasterizer.hpp"
 #include <eigen3/Eigen/Eigen>
+#include <eigen3/Eigen/src/Core/util/Constants.h>
 #include <iostream>
 #include <opencv2/opencv.hpp>
 
@@ -10,6 +11,7 @@ Eigen::Matrix4f get_view_matrix(Eigen::Vector3f eye_pos)
 {
     Eigen::Matrix4f view = Eigen::Matrix4f::Identity();
 
+    // Parallel to the coordinate axis (only need to do translation)
     Eigen::Matrix4f translate;
     translate << 1, 0, 0, -eye_pos[0], 0, 1, 0, -eye_pos[1], 0, 0, 1,
         -eye_pos[2], 0, 0, 0, 1;
@@ -22,11 +24,15 @@ Eigen::Matrix4f get_view_matrix(Eigen::Vector3f eye_pos)
 Eigen::Matrix4f get_model_matrix(float rotation_angle)
 {
     Eigen::Matrix4f model = Eigen::Matrix4f::Identity();
+    
+    Eigen::Matrix4f translate;
+    double a = rotation_angle/180 * acos(-1);
+    translate << cos(a),-sin(a), 0, 0,
+              sin(a), cos(a), 0, 0,
+              0, 0, 1, 0,
+              0, 0, 0, 1;
 
-    // TODO: Implement this function
-    // Create the model matrix for rotating the triangle around the Z axis.
-    // Then return it.
-
+    model = translate * model;
     return model;
 }
 
@@ -36,12 +42,33 @@ Eigen::Matrix4f get_projection_matrix(float eye_fov, float aspect_ratio,
     // Students will implement this function
 
     Eigen::Matrix4f projection = Eigen::Matrix4f::Identity();
-
-    // TODO: Implement this function
-    // Create the projection matrix for the given parameters.
-    // Then return it.
-
+    Eigen::Matrix4f P2O = Eigen::Matrix4f::Identity(); 
+    // Perspective Matrix to Orthographic Matrix
+    P2O << zNear, 0, 0, 0,
+         0, zNear, 0, 0,
+         0, 0, zNear+zFar,(-1)*zFar*zNear,
+         0, 0, 1, 0;
+    float halfEyeAngelRadian = eye_fov/2.0/180.0*MY_PI;
+    float t = zNear*std::tan(halfEyeAngelRadian); // Get half Y
+    float r=t*aspect_ratio; // Get half X
+    float l=(-1)*r;
+    float b=(-1)*t;
+    Eigen::Matrix4f ortho1=Eigen::Matrix4f::Identity(); 
+    // orthographic transformation
+    ortho1<<2/(r-l),0,0,0, 
+        0,2/(t-b),0,0,
+        0,0,2/(zNear-zFar),0,
+        0,0,0,1;
+    Eigen::Matrix4f ortho2 = Eigen::Matrix4f::Identity();
+    ortho2<<1,0,0,(-1)*(r+l)/2,
+        0,1,0,(-1)*(t+b)/2,
+        0,0,1,(-1)*(zNear+zFar)/2,
+        0,0,0,1;
+    Eigen::Matrix4f Matrix_ortho = ortho1 * ortho2;
+    // M_persp = M_ortho * M_persp->ortho
+    projection = Matrix_ortho * P2O;
     return projection;
+
 }
 
 int main(int argc, const char** argv)
