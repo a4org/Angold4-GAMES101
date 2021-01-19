@@ -1,7 +1,3 @@
-//
-// Created by LEI XU on 4/11/19.
-//
-
 #include "Triangle.hpp"
 #include <algorithm>
 #include <array>

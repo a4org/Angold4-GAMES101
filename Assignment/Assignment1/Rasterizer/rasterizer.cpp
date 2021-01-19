@@ -1,7 +1,3 @@
-//
-// Created by goksu on 4/6/19.
-//
-
 #include <algorithm>
 #include "rasterizer.hpp"
 #include <opencv2/opencv.hpp>
@@ -28,6 +24,7 @@ rst::ind_buf_id rst::rasterizer::load_indices(const std::vector<Eigen::Vector3i>
 
 // Bresenham's line drawing algorithm
 // Code taken from a stack overflow answer: https://stackoverflow.com/a/16405254
+// https://www.youtube.com/watch?v=RGB-wlatStc
 void rst::rasterizer::draw_line(Eigen::Vector3f begin, Eigen::Vector3f end)
 {
     auto x1 = begin.x();
@@ -150,8 +147,10 @@ void rst::rasterizer::draw(rst::pos_buf_id pos_buffer, rst::ind_buf_id ind_buffe
     auto& buf = pos_buf[pos_buffer.pos_id]; 
     auto& ind = ind_buf[ind_buffer.ind_id];
 
-    float f1 = (100 - 0.1) / 2.0;
-    float f2 = (100 + 0.1) / 2.0;
+    // I do not know what is the point of f1 and f2
+    // float f1 = (100 - 0.1) / 2.0;
+    // float f2 = (100 + 0.1) / 2.0;
+    // but if remove them, we can get the same effect
 
     Eigen::Matrix4f mvp = projection * view * model;
     for (auto& i : ind)
@@ -175,7 +174,7 @@ void rst::rasterizer::draw(rst::pos_buf_id pos_buffer, rst::ind_buf_id ind_buffe
         {
             vert.x() = 0.5*width*(vert.x()+1.0);
             vert.y() = 0.5*height*(vert.y()+1.0);
-            vert.z() = vert.z() * f1 + f2;
+            // vert.z() = vert.z() * f1 + f2;
         }
 
         for (int i = 0; i < 3; ++i)
@@ -247,4 +246,3 @@ void rst::rasterizer::set_pixel(const Eigen::Vector3f& point, const Eigen::Vecto
     // set the pixel
     frame_buf[ind] = color;
 }
-
