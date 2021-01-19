@@ -42,6 +42,7 @@ struct pos_buf_id
     int pos_id = 0;
 };
 
+// define a new type
 struct ind_buf_id
 {
     int ind_id = 0;
@@ -75,9 +76,10 @@ class rasterizer
     Eigen::Matrix4f view;
     Eigen::Matrix4f projection;
 
-    std::map<int, std::vector<Eigen::Vector3f>> pos_buf;
+    std::map<int, std::vector<Eigen::Vector3f>> pos_buf; // STL map
     std::map<int, std::vector<Eigen::Vector3i>> ind_buf;
 
+    // frame_buf define
     std::vector<Eigen::Vector3f> frame_buf;
     std::vector<float> depth_buf;
     int get_index(int x, int y);

@@ -1,6 +1,7 @@
 #include<cmath>
 #include<eigen3/Eigen/Core>
 #include<eigen3/Eigen/Dense>
+#include <eigen3/Eigen/src/Core/Matrix.h>
 #include<iostream>
 
 using namespace::std;
@@ -97,6 +98,16 @@ int main(){
 	// m * n:
 	// 0  2
 	// 7 11
+   
+    cout << "Test1: " << endl;
+    Eigen::Vector4d v4(1.9, 2.8, 3.4, 3.9);
+
+    cout << v4.head<3>() << endl;;
+
+    cout << "Test2: " << endl;
+    cout << v4.data() << endl;;
+
+
     
 
     // Exercise: (Assignment0)

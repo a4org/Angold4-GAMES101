@@ -87,12 +87,14 @@ int main(int argc, const char** argv)
             return 0;
     }
 
-    rst::rasterizer r(700, 700);
+    rst::rasterizer r(700, 700); // initialized (namespace rst is the namespace of rasterizer)
 
     Eigen::Vector3f eye_pos = {0, 0, 5};
 
+    // The coordinates of the three vertices of the triangle
     std::vector<Eigen::Vector3f> pos{{2, 0, -2}, {0, 2, -2}, {-2, 0, -2}};
 
+    // camera position
     std::vector<Eigen::Vector3i> ind{{0, 1, 2}};
 
     auto pos_id = r.load_positions(pos);
@@ -120,12 +122,16 @@ int main(int argc, const char** argv)
     while (key != 27) {
         r.clear(rst::Buffers::Color | rst::Buffers::Depth);
 
+        // mvp
         r.set_model(get_model_matrix(angle));
         r.set_view(get_view_matrix(eye_pos));
         r.set_projection(get_projection_matrix(45, 1, 0.1, 50));
 
+        // using Bresenham's drawing algorithm to draw the trangle
         r.draw(pos_id, ind_id, rst::Primitive::Triangle);
 
+        // opencv
+        // r.frame_buffer().data() is the beginning addr of the frame buffer
         cv::Mat image(700, 700, CV_32FC3, r.frame_buffer().data());
         image.convertTo(image, CV_8UC3, 1.0f);
         cv::imshow("image", image);

@@ -12,7 +12,8 @@
 rst::pos_buf_id rst::rasterizer::load_positions(const std::vector<Eigen::Vector3f> &positions)
 {
     auto id = get_next_id();
-    pos_buf.emplace(id, positions);
+    pos_buf.emplace(id, positions); // Insert a element in positions if it is unique (emplace)
+    // we can find positions through id
 
     return {id};
 }
@@ -42,18 +43,26 @@ void rst::rasterizer::draw_line(Eigen::Vector3f begin, Eigen::Vector3f end)
     dy=y2-y1;
     dx1=fabs(dx);
     dy1=fabs(dy);
+
+    // if -1 =< dy/dx <= 1
+    // p1 = 2dy - dx (initial value for p) 
     px=2*dy1-dx1;
+
+    // if dy/dx > 1
     py=2*dx1-dy1;
 
     if(dy1<=dx1)
+    // k <= 1
     {
+        // begining point
         if(dx>=0)
         {
             x=x1;
             y=y1;
-            xe=x2;
+            xe=x2; // end x
         }
         else
+        // same as x
         {
             x=x2;
             y=y2;
@@ -64,13 +73,13 @@ void rst::rasterizer::draw_line(Eigen::Vector3f begin, Eigen::Vector3f end)
         for(i=0;x<xe;i++)
         {
             x=x+1;
-            if(px<0)
+            if(px<0) // y = y
             {
-                px=px+2*dy1;
+                px=px+2*dy1; // p = px + 2dy
             }
             else
             {
-                if((dx<0 && dy<0) || (dx>0 && dy>0))
+                if((dx<0 && dy<0) || (dx>0 && dy>0)) // k > 0
                 {
                     y=y+1;
                 }
@@ -78,14 +87,14 @@ void rst::rasterizer::draw_line(Eigen::Vector3f begin, Eigen::Vector3f end)
                 {
                     y=y-1;
                 }
-                px=px+2*(dy1-dx1);
+                px=px+2*(dy1-dx1); // p = p + 2dy - 2dx
             }
 //            delay(0);
             Eigen::Vector3f point = Eigen::Vector3f(x, y, 1.0f);
             set_pixel(point,line_color);
         }
     }
-    else
+    else // just reverse x and y (when k(dy/dx) is greater than 1 or smaller than -1
     {
         if(dy>=0)
         {
@@ -138,7 +147,7 @@ void rst::rasterizer::draw(rst::pos_buf_id pos_buffer, rst::ind_buf_id ind_buffe
     {
         throw std::runtime_error("Drawing primitives other than triangle is not implemented yet!");
     }
-    auto& buf = pos_buf[pos_buffer.pos_id];
+    auto& buf = pos_buf[pos_buffer.pos_id]; 
     auto& ind = ind_buf[ind_buffer.ind_id];
 
     float f1 = (100 - 0.1) / 2.0;
@@ -149,11 +158,14 @@ void rst::rasterizer::draw(rst::pos_buf_id pos_buffer, rst::ind_buf_id ind_buffe
     {
         Triangle t;
 
+        // the elements of v[] were Vector4f (v is an array)
         Eigen::Vector4f v[] = {
                 mvp * to_vec4(buf[i[0]], 1.0f),
                 mvp * to_vec4(buf[i[1]], 1.0f),
                 mvp * to_vec4(buf[i[2]], 1.0f)
         };
+
+        // viewport transformation
 
         for (auto& vec : v) {
             vec /= vec.w();
@@ -232,6 +244,7 @@ void rst::rasterizer::set_pixel(const Eigen::Vector3f& point, const Eigen::Vecto
     if (point.x() < 0 || point.x() >= width ||
         point.y() < 0 || point.y() >= height) return;
     auto ind = (height-point.y())*width + point.x();
+    // set the pixel
     frame_buf[ind] = color;
 }
 
