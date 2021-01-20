@@ -180,8 +180,6 @@ void rst::rasterizer::draw(rst::pos_buf_id pos_buffer, rst::ind_buf_id ind_buffe
         for (int i = 0; i < 3; ++i)
         {
             t.setVertex(i, v[i].head<3>());
-            t.setVertex(i, v[i].head<3>());
-            t.setVertex(i, v[i].head<3>());
         }
 
         t.setColor(0, 255.0,  0.0,  0.0);
@@ -242,7 +240,9 @@ void rst::rasterizer::set_pixel(const Eigen::Vector3f& point, const Eigen::Vecto
     //old index: auto ind = point.y() + point.x() * width;
     if (point.x() < 0 || point.x() >= width ||
         point.y() < 0 || point.y() >= height) return;
+    // coordinates -> index
     auto ind = (height-point.y())*width + point.x();
     // set the pixel
+    // frame_buf store the color
     frame_buf[ind] = color;
 }
