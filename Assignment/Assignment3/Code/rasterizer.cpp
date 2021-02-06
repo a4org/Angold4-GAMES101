@@ -177,6 +177,7 @@ void rst::rasterizer::draw(std::vector<Triangle *> &TriangleList) {
     float f2 = (50 + 0.1) / 2.0;
 
     Eigen::Matrix4f mvp = projection * view * model;
+    // for each triangle:
     for (const auto& t:TriangleList)
     {
         Triangle newtri = *t;
@@ -193,6 +194,7 @@ void rst::rasterizer::draw(std::vector<Triangle *> &TriangleList) {
             return v.template head<3>();
         });
 
+        // mvp
         Eigen::Vector4f v[] = {
                 mvp * t->v[0],
                 mvp * t->v[1],
@@ -204,6 +206,7 @@ void rst::rasterizer::draw(std::vector<Triangle *> &TriangleList) {
             vec.y()/=vec.w();
             vec.z()/=vec.w();
         }
+        // end of mvp
 
         Eigen::Matrix4f inv_trans = (view * model).inverse().transpose();
         Eigen::Vector4f n[] = {
