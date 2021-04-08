@@ -164,6 +164,7 @@ Vector3f castRay(
                 break;
             }
             default:
+            // diffuse and glossy
             {
                 // [comment]
                 // We use the Phong illumation model int the default case. The phong model
@@ -213,6 +214,7 @@ void Renderer::Render(const Scene& scene)
     std::vector<Vector3f> framebuffer(scene.width * scene.height);
 
     float scale = std::tan(deg2rad(scene.fov * 0.5f));
+    // fov -> field of view
     float imageAspectRatio = scene.width / (float)scene.height;
 
     // Use this variable as the eye position to start your rays.
@@ -222,6 +224,7 @@ void Renderer::Render(const Scene& scene)
     {
         for (int i = 0; i < scene.width; ++i)
         {
+            // find the x and y positions of the current pixel (i, j)
             // generate primary ray direction
             float x;
             float y;
@@ -229,8 +232,15 @@ void Renderer::Render(const Scene& scene)
             // vector that passes through it.
             // Also, don't forget to multiply both of them with the variable *scale*, and
             // x (horizontal) variable with the *imageAspectRatio*            
+            x = (float)i / scene.width - 0.5;
+            y = (float)(scene.height - j) / scene.height - 0.5;
+            // To world space
+            x *= scale * imageAspectRatio;
+            // x is larger than y (1280 > 960)
+            y *= scale;        
 
             Vector3f dir = Vector3f(x, y, -1); // Don't forget to normalize this direction!
+            dir = normalize(dir);
             framebuffer[m++] = castRay(eye_pos, dir, scene, 0);
         }
         UpdateProgress(j / (float)scene.height);

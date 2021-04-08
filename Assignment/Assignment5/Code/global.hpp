@@ -52,7 +52,7 @@ inline void UpdateProgress(float progress)
     int barWidth = 70;
 
     std::cout << "[";
-    int pos = barWidth * progress;
+    int pos = barWidth * progress; // float -> int
     for (int i = 0; i < barWidth; ++i)
     {
         if (i < pos)
