@@ -224,20 +224,68 @@ void Renderer::Render(const Scene& scene)
     {
         for (int i = 0; i < scene.width; ++i)
         {
-            // find the x and y positions of the current pixel (i, j)
             // generate primary ray direction
-            float x;
-            float y;
+        
+            // find the x and y positions of the current pixel (i, j)
             // TODO: Find the x and y positions of the current pixel to get the direction
             // vector that passes through it.
             // Also, don't forget to multiply both of them with the variable *scale*, and
             // x (horizontal) variable with the *imageAspectRatio*            
-            x = (float)i / scene.width - 0.5;
-            y = (float)(scene.height - j) / scene.height - 0.5;
-            // To world space
-            x *= scale * imageAspectRatio;
-            // x is larger than y (1280 > 960)
-            y *= scale;        
+            
+
+            // 1. Screen space to NDC space (Normalized device coordinate)
+            // we transform every pixels (i, j) into number (nx, ny) in [-1, 1]
+            float nx = (i + 0.5f) * 2 / scene.width - 1.0f;
+            float ny = (j + 0.5f) * 2 / scene.height - 1.0f;
+
+
+            // 2. NDC space to world space
+            // since we want to find the primary ray direction
+            // it is necessary to find the corresponding coordinate in world space (x, y)
+            
+            // Orthographic projection matrix (M_ortho)
+            /*
+             * [ 1/r , 0  , 0     , 0         ]
+             * [ 0   , 1/t, 0     , 0         ]
+             * [ 0   , 0  ,2/(n-f),(n+f)/(f-n)] 
+             * [ 0   , 0  , 0     , 1         ]
+             */
+            // transform a (r, t, f) (0, 0, n) cuboid into [-1, 1]^3 cube (canonical)
+            
+            // Transform matrix (M_trans)
+            /*
+             * [ n  , 0  , 0  , 0  ]
+             * [ 0  , n  , 0  , 0  ]
+             * [ 0  , 0  , n+f, -nf]
+             * [ 0  , 0  , 1  , 0  ]
+             */
+            // Orthographic -> Perspective
+
+            // Perspective Matrix (M_persp)
+            // M_persp = M_ortho * M_trans
+            /*
+             *   [ n/r ,0   ,0       ,0      ]
+             *   [ 0   ,n/t ,0       ,0      ]
+             *   [ 0   ,0   ,n+f/n-f ,2nf/f-n]
+             *   [ 0   ,0   ,1       ,0      ]
+             */
+
+            // 
+            // From this M_persp, we can know that:
+            // for a coordinate in world space (x, y, z, w)
+            // nx = x * (n/r)
+            // ny = y * (n/r)
+            // in this case, n(the distance from camera to screen) equal to 1
+            // => 
+            // x = nx * r
+            // y = ny * t
+            //
+            // r = tan(fov/2) * imageAspectRatio * |n|
+            // t = tan(fov/2) * |n|
+            
+            float x = nx * scale * imageAspectRatio;
+            float y = -ny * scale; // we should get -ny because the j from top to bottom is decreasing
+
 
             Vector3f dir = Vector3f(x, y, -1); // Don't forget to normalize this direction!
             dir = normalize(dir);
