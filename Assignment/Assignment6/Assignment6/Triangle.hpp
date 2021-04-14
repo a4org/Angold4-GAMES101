@@ -6,6 +6,7 @@
 #include "OBJ_Loader.hpp"
 #include "Object.hpp"
 #include "Triangle.hpp"
+#include "Vector.hpp"
 #include <cassert>
 #include <array>
 
@@ -77,6 +78,7 @@ class MeshTriangle : public Object
 public:
     MeshTriangle(const std::string& filename)
     {
+        // the bound of mesh of triangles
         objl::Loader loader;
         loader.LoadFile(filename);
 
@@ -212,6 +214,7 @@ inline Intersection Triangle::getIntersection(Ray ray)
 {
     Intersection inter;
 
+    /*
     if (dotProduct(ray.direction, normal) > 0)
         return inter;
     double u, v, t_tmp = 0;
@@ -230,11 +233,28 @@ inline Intersection Triangle::getIntersection(Ray ray)
     if (v < 0 || u + v > 1)
         return inter;
     t_tmp = dotProduct(e2, qvec) * det_inv;
+    */ 
 
     // TODO find ray triangle intersection
+    
+    Vector3f E1 = v1 - v0, E2 = v2 - v0, S = ray.origin - v0;
+    Vector3f S1 = crossProduct(ray.direction, E2);
+    Vector3f S2 = crossProduct(S,E1);
 
+    float tnear = 1.0 / dotProduct(S1,E1) * dotProduct(S2,E2);
+    float u = 1.0 / dotProduct(S1,E1) * dotProduct(S1,S);
+    float v = 1.0 / dotProduct(S1,E1) * dotProduct(S2,ray.direction);
 
-
+    if (tnear >= 0 && u >= 0 && v >=0 && (u + v) <= 1) 
+    {
+        inter.happened = true;
+        inter.coords = Vector3f(tnear, u, v);
+        inter.normal = normal;
+        inter.m = m;
+        inter.obj = this;
+        inter.distance = tnear;
+        return inter;
+    }
 
     return inter;
 }
