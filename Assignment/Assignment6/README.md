@@ -284,7 +284,7 @@ Intersection BVHAccel::getIntersection(BVHBuildNode* node, const Ray& ray) const
 ![3DBox](Sources/3DBox.png)
 ![findT](Sources/findT.png)
 
-```
+```cpp
 // Bounds3.hpp func IntersectP()
 inline bool Bounds3::IntersectP(const Ray& ray, const Vector3f& invDir,
                                 const std::array<int, 3>& dirIsNeg) const
