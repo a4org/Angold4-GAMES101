@@ -231,6 +231,54 @@ inline Bounds3 Triangle::getBounds() { return Union(Bounds3(v0, v1), v2); }
 
 inline Intersection Triangle::getIntersection(Ray ray)
 {
+
+    /*
+    Intersection inter;
+    if (dotProduct(ray.direction, normal) > 0)
+        return inter;
+    double u, v, t_tmp = 0;
+    Vector3f pvec = crossProduct(ray.direction, e2);
+    double det = dotProduct(e1, pvec);
+    if (fabs(det) < EPSILON)
+        return inter;
+
+    double det_inv = 1. / det;
+    Vector3f tvec = ray.origin - v0;
+    u = dotProduct(tvec, pvec) * det_inv;
+    if (u < 0 || u > 1)
+        return inter;
+    Vector3f qvec = crossProduct(tvec, e1);
+    v = dotProduct(ray.direction, qvec) * det_inv;
+    if (v < 0 || u + v > 1)
+        return inter;
+    t_tmp = dotProduct(e2, qvec) * det_inv;
+    */
+
+    // TODO find ray triangle intersection
+    
+
+    /*
+    Vector3f E1 = v1 - v0, E2 = v2 - v0, S = ray.origin - v0;
+    Vector3f S1 = crossProduct(ray.direction, E2);
+    Vector3f S2 = crossProduct(S,E1);
+
+    float tnear = 1.0 / dotProduct(S1,E1) * dotProduct(S2,E2);
+    float u = 1.0 / dotProduct(S1,E1) * dotProduct(S1,S);
+    float v = 1.0 / dotProduct(S1,E1) * dotProduct(S2,ray.direction);
+
+    if (tnear >= 0 && u >= 0 && v >=0 && (u + v) <= 1)
+    {
+        inter.happened = true;
+        inter.coords = Vector3f(tnear, u, v);
+        inter.normal = normal;
+        inter.m = m;
+        inter.obj = this;
+        inter.distance = tnear;
+        return inter;
+    }
+
+    return inter;
+    */
     Intersection inter;
 
     if (dotProduct(ray.direction, normal) > 0)
@@ -252,9 +300,19 @@ inline Intersection Triangle::getIntersection(Ray ray)
         return inter;
     t_tmp = dotProduct(e2, qvec) * det_inv;
 
-    // TODO find ray triangle intersection
+    inter.happened = t_tmp > 0 && u>0 && v>0 && (1-u-v>0);
+    inter.coords = ray(t_tmp);//
+    inter.emit = m->getEmission();
+    //Vector3f tt = t0,t1,t2;
+    //inter.tcoords = tt;
+    inter.normal = normal;
+    //inter.distance = distance(Vector3f(v0,v1,v2),ray.origin);
+    inter.distance = t_tmp;//
+    inter.obj = this;
+    inter.m = m;
 
     return inter;
+
 }
 
 inline Vector3f Triangle::evalDiffuseColor(const Vector2f&) const
