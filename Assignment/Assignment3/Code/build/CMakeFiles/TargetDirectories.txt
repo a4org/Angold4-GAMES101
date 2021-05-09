@@ -1,0 +1,3 @@
+/Users/Angold4/WorkSpace/Angold4-GAMES101/Assignment/Assignment3/code/build/CMakeFiles/rebuild_cache.dir
+/Users/Angold4/WorkSpace/Angold4-GAMES101/Assignment/Assignment3/code/build/CMakeFiles/edit_cache.dir
+/Users/Angold4/WorkSpace/Angold4-GAMES101/Assignment/Assignment3/code/build/CMakeFiles/Rasterizer.dir
