@@ -1,1 +1,0 @@
-/Library/Developer/CommandLineTools/usr/bin/c++   -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names  CMakeFiles/RayTracing.dir/main.cpp.o CMakeFiles/RayTracing.dir/Vector.cpp.o CMakeFiles/RayTracing.dir/Scene.cpp.o CMakeFiles/RayTracing.dir/BVH.cpp.o CMakeFiles/RayTracing.dir/Renderer.cpp.o  -o RayTracing 
